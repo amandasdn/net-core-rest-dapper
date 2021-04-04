@@ -1,18 +1,25 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.1" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.1" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Project.Domain\Project.Domain.csproj" />
-    <ProjectReference Include="..\Project.Infra\Project.Infra.csproj" />
-    <ProjectReference Include="..\Project.Service\Project.Service.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Project.Domain\Project.Domain.csproj" />
+        <ProjectReference Include="..\Project.Infra\Project.Infra.csproj" />
+        <ProjectReference Include="..\Project.Service\Project.Service.csproj" />
+    </ItemGroup>
 
+    <PropertyGroup>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+        <DocumentationFile>bin\$(Configuration)\$(AssemblyName).xml</DocumentationFile>
+    </PropertyGroup>
 
 </Project>

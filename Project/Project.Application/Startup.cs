@@ -13,7 +13,9 @@ using Project.Infra.Repositories;
 using Project.Service.Services;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Project.Application
@@ -40,6 +42,11 @@ namespace Project.Application
                     Title = "Amandasdn.Project.Api",
                     Description = "https://github.com/amandasdn/ASPNET_Core_REST_Dapper"
                 });
+
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+
+                x.IncludeXmlComments(xmlPath, includeControllerXmlComments: true);
             });
 
             services.TryAddScoped<IProductRepository, ProductRepository>();

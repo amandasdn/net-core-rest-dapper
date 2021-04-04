@@ -19,6 +19,9 @@ namespace Project.Application.Controllers
             _categoryService = categoryService;
         }
 
+        /// <summary>
+        /// Get all categories.
+        /// </summary>
         [HttpGet]
         public async Task<ActionResult<List<Category>>> Get()
         {
