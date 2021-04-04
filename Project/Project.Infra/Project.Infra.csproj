@@ -6,7 +6,10 @@
 
   <ItemGroup>
     <Folder Include="Config\" />
-    <Folder Include="Repositories\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Project.Domain\Project.Domain.csproj" />
   </ItemGroup>
 
 </Project>
