@@ -7,7 +7,10 @@ namespace Project.Domain.Entities
 {
     public class Response<T>
     {
-        public DateTime DateTime { get; set; } = DateTime.UtcNow;
+        public string Date
+        {
+            get => DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
+        }
 
         public bool Status { get; set; } = true;
 
