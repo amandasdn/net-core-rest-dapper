@@ -15,19 +15,27 @@ namespace Project.Application.Controllers
         private ICategoryService _categoryService;
 
         public CategoryController(ICategoryService categoryService)
-        {
-            _categoryService = categoryService;
-        }
+            =>_categoryService = categoryService;
 
         /// <summary>
         /// Get all categories.
         /// </summary>
+        [ProducesResponseType(typeof(Response<List<Category>>), 200)]
         [HttpGet]
-        public async Task<ActionResult<List<Category>>> Get()
+        public ActionResult<Response<List<Category>>> Get()
         {
-            var response = new List<Category>();
+            var response = new Response<List<Category>>();
 
-            return response;
+            try
+            {
+                response.Data = _categoryService.ListCategories().ToList();
+
+                return response;
+            }
+            catch(Exception e)
+            {
+                return null;
+            }
         }
     }
 }

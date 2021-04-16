@@ -3,13 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31129.286
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Project.Application", "Project.Application\Project.Application.csproj", "{A6177119-324D-4480-BBDF-07C064BC16BF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Project.Application", "Project.Application\Project.Application.csproj", "{A6177119-324D-4480-BBDF-07C064BC16BF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Project.Service", "Project.Service\Project.Service.csproj", "{0202ABF6-4216-47A1-AA88-C46568829EAE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Project.Service", "Project.Service\Project.Service.csproj", "{0202ABF6-4216-47A1-AA88-C46568829EAE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Project.Infra", "Project.Infra\Project.Infra.csproj", "{25571D20-4E3B-4FC3-8B88-30FDB6D9C4D2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Project.Infra", "Project.Infra\Project.Infra.csproj", "{25571D20-4E3B-4FC3-8B88-30FDB6D9C4D2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Project.Domain", "Project.Domain\Project.Domain.csproj", "{E704BC1B-B1AF-420A-A35A-7A642CA0C8F0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Project.Domain", "Project.Domain\Project.Domain.csproj", "{E704BC1B-B1AF-420A-A35A-7A642CA0C8F0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sql", "sql", "{1F65B328-71A9-40E9-AD76-FCE78AA3301D}"
+	ProjectSection(SolutionItems) = preProject
+		sql\TB_CATEGORY.sql = sql\TB_CATEGORY.sql
+		sql\TB_PRODUCT.sql = sql\TB_PRODUCT.sql
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
