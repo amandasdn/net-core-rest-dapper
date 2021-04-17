@@ -2,20 +2,21 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Project.Domain.Interfaces
 {
     public interface ICategoryService
     {
-        IEnumerable<Category> ListCategories();
+        Task<IEnumerable<Category>> ListCategories();
 
-        Category GetCategoryById(int id);
+        Task<Category> GetCategoryById(int id);
 
-        void CreateCategory(Category entity);
+        Task<int> CreateCategory(Category entity);
 
-        void UpdateCategory(Category entity);
+        Task<bool> UpdateCategory(Category entity);
 
-        void DeleteCategory(Category entity);
+        Task<bool> DeleteCategory(Category entity);
     }
 
     public interface ICategoryRepository : IRepository<Category> { }

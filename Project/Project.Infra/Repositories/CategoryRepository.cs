@@ -7,6 +7,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using Microsoft.Extensions.Configuration;
+using System.Threading.Tasks;
 
 namespace Project.Infra.Repositories
 {
@@ -17,7 +18,7 @@ namespace Project.Infra.Repositories
         public CategoryRepository(IConfiguration configuration)
             => _connectionString = configuration.GetConnectionString("Mands01");
 
-        public IEnumerable<Category> GetAll()
+        public async Task<IEnumerable<Category>> GetAll()
         {
             IEnumerable<Category> categories;
 
@@ -27,8 +28,9 @@ namespace Project.Infra.Repositories
                     SELECT * FROM TB_CATEGORY;
                 ";
 
-                categories = con.Query<dynamic>(query)
-                .Select(item => new Category
+                var result = await con.QueryAsync<dynamic>(query);
+
+                categories = result.Select(item => new Category
                 {
                     Id = item.ID_CATEGORY,
                     CreatedOn = item.DT_CREATED_ON,
@@ -42,20 +44,37 @@ namespace Project.Infra.Repositories
             return categories;
         }
 
-        public Category GetById(int id)
+        public async Task<Category> GetById(int id)
         {
             Category category;
+
+            var prm = new DynamicParameters();
+            prm.Add("@ID_CATEGORY", id);
 
             using (var con = new SqlConnection(_connectionString))
             {
                 var query = @" SELECT * FROM TB_CATEGORY WHERE ID_CATEGORY = @ID_CATEGORY; ";
+
+                var result = await con.QueryAsync<dynamic>(query, prm);
+
+                category = result.Select(item => new Category
+                {
+                    Id = item.ID_CATEGORY,
+                    CreatedOn = item.DT_CREATED_ON,
+                    Active = item.FL_ACTIVE,
+                    Removed = item.FL_REMOVED,
+                    Name = item.DS_NAME,
+                    Description = item.DS_DESCRIPTION
+                }).FirstOrDefault();
             };
 
-            return null;
+            return category;
         }
 
-        public void Insert(Category entity)
+        public async Task<int> Insert(Category entity)
         {
+            int result = 0;
+
             var prm = new DynamicParameters();
             prm.Add("@DS_NAME", entity.Name);
             prm.Add("@DS_DESCRIPTION", entity.Description);
@@ -63,7 +82,7 @@ namespace Project.Infra.Repositories
             using (var con = new SqlConnection(_connectionString))
             {
                 var query = @"
-                    INSERT INTO TB_CATEGORY
+                    INSERT INTO TB_CATEGORY (DT_CREATED_ON, FL_ACTIVE, FL_REMOVED, DS_NAME, DS_DESCRIPTION)
                     VALUES (
                         GETDATE(),
                         1,
@@ -71,18 +90,47 @@ namespace Project.Infra.Repositories
                         @DS_NAME,
                         @DS_DESCRIPTION
                     );
+
+                    SELECT CAST(SCOPE_IDENTITY() as int);
                 ";
 
-                con.Execute(query, prm);
+                result = await con.ExecuteScalarAsync<int>(query, prm);
             };
+
+            return result;
         }
 
-        public void Update(Category entity)
+        public async Task<bool> Update(Category entity)
         {
-            throw new NotImplementedException();
+            bool result = false;
+
+            var prm = new DynamicParameters();
+            prm.Add("@ID_CATEGORY", entity.Id);
+            prm.Add("@FL_ACTIVE", entity.Active ? 1 : 0);
+            prm.Add("@DS_NAME", entity.Name);
+            prm.Add("@DS_DESCRIPTION", entity.Description);
+
+            using (var con = new SqlConnection(_connectionString))
+            {
+                var query = @"
+                    UPDATE TB_CATEGORY
+                    SET
+                        FL_ACTIVE = @FL_ACTIVE,
+                        DS_NAME = @DS_NAME,
+                        DS_DESCRIPTION = @DS_DESCRIPTION
+                    WHERE
+                        ID_CATEGORY = @ID_CATEGORY;
+                ";
+
+                var exec = await con.ExecuteAsync(query, prm);
+
+                if (exec > 0) result = true;
+            }
+
+            return result;
         }
 
-        public void Delete(Category entity)
+        public async Task<bool> Delete(Category entity)
         {
             throw new NotImplementedException();
         }
