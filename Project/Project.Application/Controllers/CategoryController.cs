@@ -89,7 +89,7 @@ namespace Project.Application.Controllers
         [ProducesResponseType(typeof(Response<object>), 201)]
         [ProducesResponseType(typeof(Response<object>), 500)]
         [HttpPost]
-        public async Task<ActionResult<Response<object>>> CreateAsync([FromQuery] CategoryRequest request)
+        public async Task<ActionResult<Response<object>>> CreateAsync([FromBody] CategoryRequest request)
         {
             var response = new Response<object>();
 
@@ -124,7 +124,7 @@ namespace Project.Application.Controllers
         [ProducesResponseType(typeof(Response<object>), 200)]
         [ProducesResponseType(typeof(Response<object>), 500)]
         [HttpPut("{id:int}/edit")]
-        public async Task<ActionResult<Response<object>>> UpdateAsync([FromRoute, Required] int id, [FromForm] CategoryRequest request, [FromQuery] bool active = true)
+        public async Task<ActionResult<Response<object>>> UpdateAsync([FromRoute, Required] int id, [FromBody] CategoryRequest request, [FromQuery] bool active = true)
         {
             var response = new Response<object>();
 
@@ -158,7 +158,7 @@ namespace Project.Application.Controllers
         }
 
         /// <summary>
-        /// Set category as removed.
+        /// Set a category as removed.
         /// </summary>
         [ProducesResponseType(typeof(Response<object>), 200)]
         [ProducesResponseType(typeof(Response<object>), 500)]

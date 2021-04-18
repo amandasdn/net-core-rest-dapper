@@ -17,6 +17,17 @@ namespace Project.Domain.Entities
 
         public ProductType Type { get; set; }
 
+        public ProductImage Image { get; set; } = new ProductImage();
+
         public Category Category { get; set; }
+    }
+
+    public class ProductImage
+    {
+        public string Name { get; set; }
+
+        public string Type { get; set; }
+
+        public string Base64 { get; set; }
     }
 }

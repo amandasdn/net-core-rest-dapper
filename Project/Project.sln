@@ -11,12 +11,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Project.Infra", "Project.In
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Project.Domain", "Project.Domain\Project.Domain.csproj", "{E704BC1B-B1AF-420A-A35A-7A642CA0C8F0}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sql", "sql", "{1F65B328-71A9-40E9-AD76-FCE78AA3301D}"
-	ProjectSection(SolutionItems) = preProject
-		sql\TB_CATEGORY.sql = sql\TB_CATEGORY.sql
-		sql\TB_PRODUCT.sql = sql\TB_PRODUCT.sql
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
