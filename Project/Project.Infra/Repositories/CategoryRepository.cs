@@ -78,13 +78,14 @@ namespace Project.Infra.Repositories
             var prm = new DynamicParameters();
             prm.Add("@DS_NAME", entity.Name);
             prm.Add("@DS_DESCRIPTION", entity.Description);
+            prm.Add("@DT_CREATED_ON", entity.CreatedOn);
 
             using (var con = new SqlConnection(_connectionString))
             {
                 var query = @"
                     INSERT INTO TB_CATEGORY (DT_CREATED_ON, FL_ACTIVE, FL_REMOVED, DS_NAME, DS_DESCRIPTION)
                     VALUES (
-                        GETDATE(),
+                        @DT_CREATED_ON,
                         1,
                         0,
                         @DS_NAME,

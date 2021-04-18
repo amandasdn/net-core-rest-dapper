@@ -15,16 +15,19 @@ namespace Project.Domain.Entities
         public T Data { get; set; }
 
         public ResponseInfo Info { get; set; } = new ResponseInfo();
+
+        public void SetError(string message)
+        {
+            Data = default;
+            Info.Success = false;
+            Info.Message = message;
+        }
     }
 
     public class ResponseInfo
     {
-        public int Code { get; set; } = 0;
+        public bool Success { get; set; } = true;
 
-        [JsonProperty("Title")]
-        public string MessageTitle { get; set; } = "Sucesso";
-
-        [JsonProperty("Description")]
-        public string MessageDescription { get; set; } = "Operação realizada com sucesso.";
+        public string Message { get; set; } = "Operação realizada com sucesso.";
     }
 }

@@ -18,16 +18,5 @@ namespace Project.Application.Controllers
         {
             _productService = productService;
         }
-
-        /// <summary>
-        /// Get all products.
-        /// </summary>
-        [HttpGet]
-        public async Task<ActionResult<List<Product>>> Get()
-        {
-            var response = new List<Product>();
-
-            return response;
-        }
     }
 }

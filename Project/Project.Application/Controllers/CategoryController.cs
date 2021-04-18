@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace Project.Application.Controllers
 {
+    /// <summary>
+    /// Category Controller.
+    /// </summary>
     [ApiController]
     [Route("api/v1.0/[Controller]")]
     public class CategoryController : ControllerBase
@@ -25,8 +28,9 @@ namespace Project.Application.Controllers
         /// Get all categories.
         /// </summary>
         [ProducesResponseType(typeof(Response<List<Category>>), 200)]
+        [ProducesResponseType(typeof(Response<object>), 500)]
         [HttpGet]
-        public async Task<ActionResult<Response<List<Category>>>> GetAsync(bool onlyActive = true)
+        public async Task<ActionResult> GetAsync([FromQuery] bool onlyActive = true)
         {
             var response = new Response<List<Category>>();
 
@@ -34,17 +38,15 @@ namespace Project.Application.Controllers
             {
                 var result = await _categoryService.ListCategories();
 
-                response.Data = result.Where(x => !x.Removed && (onlyActive ? x.Active : true)).ToList();
+                response.Data = result.Where(x => !x.Removed && (!onlyActive || x.Active)).ToList();
 
-                return response;
+                return Ok(response);
             }
             catch(Exception e)
             {
-                response.Info.Code = 99;
-                response.Info.MessageTitle = "Erro";
-                response.Info.MessageDescription = e.Message;
+                response.SetError(e.Message);
 
-                return response;
+                return StatusCode(500, response);
             }
         }
 
@@ -52,8 +54,10 @@ namespace Project.Application.Controllers
         /// Get category by id.
         /// </summary>
         [ProducesResponseType(typeof(Response<Category>), 200)]
+        [ProducesResponseType(typeof(Response<object>), 400)]
+        [ProducesResponseType(typeof(Response<object>), 500)]
         [HttpGet("{id:int}")]
-        public async Task<ActionResult<Response<Category>>> GetAsync(int id)
+        public async Task<ActionResult<Response<Category>>> GetAsync([FromRoute, Required] int id)
         {
             var response = new Response<Category>();
 
@@ -62,17 +66,18 @@ namespace Project.Application.Controllers
                 response.Data = await _categoryService.GetCategoryById(id);
 
                 if (response.Data == null)
-                    response.Info.MessageDescription = "Não há nenhuma categoria com o id especificado.";
+                {
+                    response.SetError("Não há nenhuma categoria com o ID especificado.");
+                    return BadRequest(response);
+                }
 
-                return response;
+                return Ok(response);
             }
             catch (Exception e)
             {
-                response.Info.Code = 99;
-                response.Info.MessageTitle = "Erro";
-                response.Info.MessageDescription = e.Message;
+                response.SetError(e.Message);
 
-                return response;
+                return StatusCode(500, response);
             }
         }
 
@@ -80,6 +85,7 @@ namespace Project.Application.Controllers
         /// Create a category.
         /// </summary>
         [ProducesResponseType(typeof(Response<object>), 201)]
+        [ProducesResponseType(typeof(Response<object>), 500)]
         [HttpPost]
         public async Task<ActionResult<Response<object>>> CreateAsync([FromQuery] CategoryRequest request)
         {
@@ -98,15 +104,15 @@ namespace Project.Application.Controllers
                 if (result <= 0)
                     throw new Exception("Ocorreu um erro ao tentar cadastrar a categoria.");
 
-                return response;
+                category.Id = result;
+
+                return Created(nameof(CreateAsync), category);
             }
             catch (Exception e)
             {
-                response.Info.Code = 99;
-                response.Info.MessageTitle = "Erro";
-                response.Info.MessageDescription = e.Message;
+                response.SetError(e.Message);
 
-                return response;
+                return StatusCode(500, response);
             }
         }
 
@@ -114,8 +120,9 @@ namespace Project.Application.Controllers
         /// Edit a category.
         /// </summary>
         [ProducesResponseType(typeof(Response<object>), 200)]
-        [HttpPut("edit")]
-        public async Task<ActionResult<Response<object>>> UpdateAsync([FromQuery, Required] int id, [FromQuery] bool active, [FromQuery] CategoryRequest request)
+        [ProducesResponseType(typeof(Response<object>), 500)]
+        [HttpPut("{id:int}/edit")]
+        public async Task<ActionResult<Response<object>>> UpdateAsync([FromRoute, Required] int id, [FromForm] CategoryRequest request, [FromQuery] bool active = true)
         {
             var response = new Response<object>();
 
@@ -123,12 +130,15 @@ namespace Project.Application.Controllers
             {
                 var category = await _categoryService.GetCategoryById(id);
 
-                if(category == null || category?.Id <= 0)
-                    throw new Exception("A categoria não foi encontrada.");
+                if (category == null || category?.Id <= 0)
+                {
+                    response.SetError("A categoria não foi encontrada.");
+                    return BadRequest(response);
+                }
 
                 category.Active = active;
                 category.Name = request.Name != null && request.Name?.Trim() != string.Empty ? request.Name : category.Name;
-                category.Description = request.Description != null && request.Description?.Trim() != string.Empty ? request.Description : category.Description;
+                category.Description = request.Description ?? category.Description;
 
                 var result = await _categoryService.UpdateCategory(category);
 
@@ -139,11 +149,9 @@ namespace Project.Application.Controllers
             }
             catch (Exception e)
             {
-                response.Info.Code = 99;
-                response.Info.MessageTitle = "Erro";
-                response.Info.MessageDescription = e.Message;
+                response.SetError(e.Message);
 
-                return response;
+                return StatusCode(500, response);
             }
         }
     }
