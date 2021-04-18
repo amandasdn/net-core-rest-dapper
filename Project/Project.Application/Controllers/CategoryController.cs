@@ -63,13 +63,15 @@ namespace Project.Application.Controllers
 
             try
             {
-                response.Data = await _categoryService.GetCategoryById(id);
+                var result = await _categoryService.GetCategoryById(id);
 
-                if (response.Data == null)
+                if (result == null || result.Removed)
                 {
                     response.SetError("Não há nenhuma categoria com o ID especificado.");
                     return BadRequest(response);
                 }
+
+                response.Data = result;
 
                 return Ok(response);
             }
@@ -141,6 +143,41 @@ namespace Project.Application.Controllers
                 category.Description = request.Description ?? category.Description;
 
                 var result = await _categoryService.UpdateCategory(category);
+
+                if (!result)
+                    throw new Exception("Ocorreu um erro ao tentar cadastrar a categoria.");
+
+                return response;
+            }
+            catch (Exception e)
+            {
+                response.SetError(e.Message);
+
+                return StatusCode(500, response);
+            }
+        }
+
+        /// <summary>
+        /// Set category as removed.
+        /// </summary>
+        [ProducesResponseType(typeof(Response<object>), 200)]
+        [ProducesResponseType(typeof(Response<object>), 500)]
+        [HttpPatch("{id:int}/remove")]
+        public async Task<ActionResult<Response<object>>> RemoveAsync([FromRoute, Required] int id)
+        {
+            var response = new Response<object>();
+
+            try
+            {
+                var category = await _categoryService.GetCategoryById(id);
+
+                if (category == null || category?.Id <= 0 || category.Removed)
+                {
+                    response.SetError("A categoria não foi encontrada.");
+                    return BadRequest(response);
+                }
+
+                var result = await _categoryService.DeleteCategory(category);
 
                 if (!result)
                     throw new Exception("Ocorreu um erro ao tentar cadastrar a categoria.");

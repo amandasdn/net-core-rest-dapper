@@ -125,7 +125,7 @@ namespace Project.Infra.Repositories
 
                 var exec = await con.ExecuteAsync(query, prm);
 
-                if (exec > 0) result = true;
+                result = (exec > 0);
             }
 
             return result;
@@ -133,7 +133,27 @@ namespace Project.Infra.Repositories
 
         public async Task<bool> Delete(Category entity)
         {
-            throw new NotImplementedException();
+            bool result = false;
+
+            var prm = new DynamicParameters();
+            prm.Add("@ID_CATEGORY", entity.Id);
+
+            using (var con = new SqlConnection(_connectionString))
+            {
+                var query = @"
+                    UPDATE TB_CATEGORY
+                    SET
+                        FL_REMOVED = 1
+                    WHERE
+                        ID_CATEGORY = @ID_CATEGORY;
+                ";
+
+                var exec = await con.ExecuteAsync(query, prm);
+
+                result = (exec > 0);
+            }
+
+            return result;
         }
     }
 }
