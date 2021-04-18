@@ -7,4 +7,6 @@ API REST em ASP.Net Core 3.1. Arquitetura em quatro camadas (application/domain/
 - Visual Studio 2019;
 - ASP.Net Core 3.1;
 - API REST;
-- Dapper.
+- Dapper;
+- SQL;
+- Swagger.
