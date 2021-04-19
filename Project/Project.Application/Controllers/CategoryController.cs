@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Project.Application.Util;
 using Project.Domain.Entities;
 using Project.Domain.Interfaces;
 using System;
@@ -38,15 +39,13 @@ namespace Project.Application.Controllers
             {
                 var result = await _categoryService.ListCategories();
 
-                response.Data = result.Where(x => !x.Removed && (!onlyActive || x.Active)).ToList();
+                response.Data = result.Where(x => (!onlyActive || x.Active)).ToList();
 
                 return Ok(response);
             }
             catch(Exception e)
             {
-                response.SetError(e.Message);
-
-                return StatusCode(500, response);
+                return this.InternalServerError(response, e);
             }
         }
 
@@ -65,7 +64,7 @@ namespace Project.Application.Controllers
             {
                 var result = await _categoryService.GetCategoryById(id);
 
-                if (result == null || result.Removed)
+                if (result == null)
                 {
                     response.SetError("Não há nenhuma categoria com o ID especificado.");
                     return BadRequest(response);
@@ -77,9 +76,7 @@ namespace Project.Application.Controllers
             }
             catch (Exception e)
             {
-                response.SetError(e.Message);
-
-                return StatusCode(500, response);
+                return this.InternalServerError(response, e);
             }
         }
 
@@ -89,7 +86,7 @@ namespace Project.Application.Controllers
         [ProducesResponseType(typeof(Response<object>), 201)]
         [ProducesResponseType(typeof(Response<object>), 500)]
         [HttpPost]
-        public async Task<ActionResult<Response<object>>> CreateAsync([FromBody] CategoryRequest request)
+        public async Task<ActionResult<Response<object>>> CreateAsync([FromForm] CategoryRequest request)
         {
             var response = new Response<object>();
 
@@ -112,9 +109,7 @@ namespace Project.Application.Controllers
             }
             catch (Exception e)
             {
-                response.SetError(e.Message);
-
-                return StatusCode(500, response);
+                return this.InternalServerError(response, e);
             }
         }
 
@@ -124,7 +119,7 @@ namespace Project.Application.Controllers
         [ProducesResponseType(typeof(Response<object>), 200)]
         [ProducesResponseType(typeof(Response<object>), 500)]
         [HttpPut("{id:int}/edit")]
-        public async Task<ActionResult<Response<object>>> UpdateAsync([FromRoute, Required] int id, [FromBody] CategoryRequest request, [FromQuery] bool active = true)
+        public async Task<ActionResult<Response<object>>> UpdateAsync([FromRoute, Required] int id, [FromForm] CategoryRequest request, [FromQuery] bool active = true)
         {
             var response = new Response<object>();
 
@@ -151,9 +146,7 @@ namespace Project.Application.Controllers
             }
             catch (Exception e)
             {
-                response.SetError(e.Message);
-
-                return StatusCode(500, response);
+                return this.InternalServerError(response, e);
             }
         }
 
@@ -171,7 +164,7 @@ namespace Project.Application.Controllers
             {
                 var category = await _categoryService.GetCategoryById(id);
 
-                if (category == null || category?.Id <= 0 || category.Removed)
+                if (category == null || category?.Id <= 0)
                 {
                     response.SetError("A categoria não foi encontrada.");
                     return BadRequest(response);
@@ -186,9 +179,7 @@ namespace Project.Application.Controllers
             }
             catch (Exception e)
             {
-                response.SetError(e.Message);
-
-                return StatusCode(500, response);
+                return this.InternalServerError(response, e);
             }
         }
     }

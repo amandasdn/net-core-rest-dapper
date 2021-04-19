@@ -25,7 +25,10 @@ namespace Project.Infra.Repositories
             using (var con = new SqlConnection(_connectionString))
             {
                 var query = @" 
-                    SELECT * FROM TB_CATEGORY;
+                    SELECT
+                        *
+                    FROM TB_CATEGORY
+                    WHERE FL_REMOVED = 0;
                 ";
 
                 var result = await con.QueryAsync<dynamic>(query);
@@ -53,7 +56,14 @@ namespace Project.Infra.Repositories
 
             using (var con = new SqlConnection(_connectionString))
             {
-                var query = @" SELECT * FROM TB_CATEGORY WHERE ID_CATEGORY = @ID_CATEGORY; ";
+                var query = @"
+                    SELECT
+                        *
+                    FROM TB_CATEGORY
+                    WHERE
+                        ID_CATEGORY = @ID_CATEGORY
+                        AND FL_REMOVED = 0;
+                ";
 
                 var result = await con.QueryAsync<dynamic>(query, prm);
 
@@ -120,7 +130,8 @@ namespace Project.Infra.Repositories
                         DS_NAME = @DS_NAME,
                         DS_DESCRIPTION = @DS_DESCRIPTION
                     WHERE
-                        ID_CATEGORY = @ID_CATEGORY;
+                        ID_CATEGORY = @ID_CATEGORY
+                        AND FL_REMOVED = 0;
                 ";
 
                 var exec = await con.ExecuteAsync(query, prm);
@@ -145,7 +156,8 @@ namespace Project.Infra.Repositories
                     SET
                         FL_REMOVED = 1
                     WHERE
-                        ID_CATEGORY = @ID_CATEGORY;
+                        ID_CATEGORY = @ID_CATEGORY
+                        AND FL_REMOVED = 0;
                 ";
 
                 var exec = await con.ExecuteAsync(query, prm);

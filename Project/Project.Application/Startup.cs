@@ -52,8 +52,8 @@ namespace Project.Application
             services.TryAddScoped<ICategoryRepository, CategoryRepository>();
             services.TryAddScoped<ICategoryService, CategoryService>();
 
-            // services.TryAddScoped<IProductRepository, ProductRepository>();
-            // services.TryAddScoped<IProductService, ProductService>();
+            services.TryAddScoped<IProductRepository, ProductRepository>();
+            services.TryAddScoped<IProductService, ProductService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
