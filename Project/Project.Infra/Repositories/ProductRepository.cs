@@ -61,9 +61,51 @@ namespace Project.Infra.Repositories
             return products;
         }
 
-        public Task<Product> GetById(int id)
+        public async Task<Product> GetById(int id)
         {
-            throw new NotImplementedException();
+            Product product;
+
+            var prm = new DynamicParameters();
+            prm.Add("@ID_PRODUCT", id);
+
+            using (var con = new SqlConnection(_connectionString))
+            {
+                var query = @" 
+                    SELECT
+                        *
+                    FROM TB_PRODUCT
+                    WHERE
+                        ID_PRODUCT = @ID_PRODUCT
+                        AND FL_REMOVED = 0;
+                ";
+
+                var result = await con.QueryAsync<dynamic>(query, prm);
+
+                product = result.Select(item => new Product
+                {
+                    Id = item.ID_PRODUCT,
+                    CreatedOn = item.DT_CREATED_ON,
+                    Active = item.FL_ACTIVE,
+                    Removed = item.FL_REMOVED,
+                    Name = item.DS_NAME,
+                    Description = item.DS_DESCRIPTION,
+                    UnitPrice = item.VL_UNIT_PRICE,
+                    Quantity = item.NR_QUANTITY,
+                    Type = (ProductType)item.NR_TYPE,
+                    Category = new Category
+                    {
+                        Id = item.ID_CATEGORY
+                    },
+                    Image = new ProductImage
+                    {
+                        Name = item.DS_IMAGE_NAME,
+                        Type = item.DS_IMAGE_TYPE,
+                        Base64 = item.DS_IMAGE_BASE64
+                    }
+                }).FirstOrDefault();
+            };
+
+            return product;
         }
 
         public async Task<int> Insert(Product entity)
@@ -124,14 +166,69 @@ namespace Project.Infra.Repositories
             return result;
         }
 
-        public Task<bool> Update(Product entity)
+        public async Task<bool> Update(Product entity)
         {
-            throw new NotImplementedException();
+            bool result = false;
+
+            var prm = new DynamicParameters();
+            prm.Add("@ID_PRODUCT", entity.Id);
+            prm.Add("@FL_ACTIVE", entity.Active ? 1 : 0);
+            prm.Add("@DS_NAME", entity.Name);
+            prm.Add("@DS_DESCRIPTION", entity.Description);
+            prm.Add("@VL_UNIT_PRICE", entity.UnitPrice);
+            prm.Add("@NR_QUANTITY", entity.Quantity);
+            prm.Add("@NR_TYPE", entity.Type);
+            prm.Add("@ID_CATEGORY", entity.Category.Id);
+
+            using (var con = new SqlConnection(_connectionString))
+            {
+                var query = @"
+                    UPDATE TB_PRODUCT
+                    SET
+                        FL_ACTIVE = @FL_ACTIVE,
+                        DS_NAME = @DS_NAME,
+                        DS_DESCRIPTION = @DS_DESCRIPTION,
+                        VL_UNIT_PRICE = @VL_UNIT_PRICE,
+                        NR_QUANTITY = @NR_QUANTITY,
+                        NR_TYPE = @NR_TYPE,
+                        ID_CATEGORY = @ID_CATEGORY
+                    WHERE
+                        ID_PRODUCT = @ID_PRODUCT
+                        AND FL_REMOVED = 0;
+                ";
+
+                var exec = await con.ExecuteAsync(query, prm);
+
+                result = (exec > 0);
+            }
+
+            return result;
         }
 
-        public Task<bool> Delete(Product entity)
+        public async Task<bool> Delete(Product entity)
         {
-            throw new NotImplementedException();
+            bool result = false;
+
+            var prm = new DynamicParameters();
+            prm.Add("@ID_PRODUCT", entity.Id);
+
+            using (var con = new SqlConnection(_connectionString))
+            {
+                var query = @"
+                    UPDATE TB_PRODUCT
+                    SET
+                        FL_REMOVED = 1
+                    WHERE
+                        ID_PRODUCT = @ID_PRODUCT
+                        AND FL_REMOVED = 0;
+                ";
+
+                var exec = await con.ExecuteAsync(query, prm);
+
+                result = (exec > 0);
+            }
+
+            return result;
         }
     }
 }

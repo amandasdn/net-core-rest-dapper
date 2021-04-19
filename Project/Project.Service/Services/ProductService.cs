@@ -34,8 +34,14 @@ namespace Project.Service.Services
             return result;
         }
 
-        public Task<Product> GetProductById(int id)
-            => _productRepository.GetById(id);
+        public async Task<Product> GetProductById(int id)
+        {
+            var product = await _productRepository.GetById(id);
+
+            if (product != null) product.Category = await _categoryService.GetCategoryById(id);
+
+            return product;
+        }
 
         public Task<int> CreateProduct(Product entity)
             => _productRepository.Insert(entity);

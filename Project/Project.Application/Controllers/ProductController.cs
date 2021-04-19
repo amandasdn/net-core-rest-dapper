@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Project.Application.Util;
-using Project.Domain;
 using Project.Domain.Entities;
 using Project.Domain.Interfaces;
 using System;
@@ -137,6 +136,80 @@ namespace Project.Application.Controllers
                 product.Id = result;
 
                 return Created(nameof(CreateAsync), product);
+            }
+            catch (Exception e)
+            {
+                return this.InternalServerError(response, e);
+            }
+        }
+
+        /// <summary>
+        /// Edit a product.
+        /// </summary>
+        [ProducesResponseType(typeof(Response<object>), 200)]
+        [ProducesResponseType(typeof(Response<object>), 500)]
+        [HttpPut("{id:int}/edit")]
+        public async Task<ActionResult<Response<object>>> UpdateAsync([FromRoute, Required] int id, [FromForm] ProductRequest request, [FromQuery] bool active = true)
+        {
+            var response = new Response<object>();
+
+            try
+            {
+                var product = await _productService.GetProductById(id);
+
+                if (product == null || product?.Id <= 0)
+                {
+                    response.SetError("O produto não foi encontrado.");
+                    return BadRequest(response);
+                }
+
+                product.Active = active;
+                product.Name = request.Name != null && request.Name?.Trim() != string.Empty ? request.Name : product.Name;
+                product.Description = request.Description ?? product.Description;
+                product.UnitPrice = request.UnitPrice;
+                product.Quantity = request.Quantity;
+                product.Type = request.Type;
+                product.Category = new Category { Id = request.CategoryId };
+
+                var result = await _productService.UpdateProduct(product);
+
+                if (!result)
+                    throw new Exception("Ocorreu um erro ao tentar cadastrar o produto.");
+
+                return response;
+            }
+            catch (Exception e)
+            {
+                return this.InternalServerError(response, e);
+            }
+        }
+
+        /// <summary>
+        /// Set a product as removed.
+        /// </summary>
+        [ProducesResponseType(typeof(Response<object>), 200)]
+        [ProducesResponseType(typeof(Response<object>), 500)]
+        [HttpPatch("{id:int}/remove")]
+        public async Task<ActionResult<Response<object>>> RemoveAsync([FromRoute, Required] int id)
+        {
+            var response = new Response<object>();
+
+            try
+            {
+                var product = await _productService.GetProductById(id);
+
+                if (product == null || product?.Id <= 0)
+                {
+                    response.SetError("O produto não foi encontrado.");
+                    return BadRequest(response);
+                }
+
+                var result = await _productService.DeleteProduct(product);
+
+                if (!result)
+                    throw new Exception("Ocorreu um erro ao tentar cadastrar o produto.");
+
+                return response;
             }
             catch (Exception e)
             {
