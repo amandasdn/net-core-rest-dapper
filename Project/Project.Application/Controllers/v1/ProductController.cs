@@ -10,7 +10,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Project.Application.Controllers
+namespace Project.Application.Controllers.v1
 {
     /// <summary>
     /// Product Controller.

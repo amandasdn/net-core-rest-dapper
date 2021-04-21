@@ -23,6 +23,12 @@ namespace Project.Application.Configuration
                 options.ReportApiVersions = true;
             });
 
+            services.AddVersionedApiExplorer(options =>
+            {
+                options.GroupNameFormat = "'v'VVV";
+                options.SubstituteApiVersionInUrl = true;
+            });
+
             return services;
         }
 
