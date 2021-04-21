@@ -53,7 +53,7 @@ namespace Project.Application.Controllers
         /// Get category by id.
         /// </summary>
         [ProducesResponseType(typeof(Response<Category>), 200)]
-        [ProducesResponseType(typeof(Response<object>), 400)]
+        [ProducesResponseType(typeof(Response<object>), 404)]
         [ProducesResponseType(typeof(Response<object>), 500)]
         [HttpGet("{id:int}")]
         public async Task<ActionResult<Response<Category>>> GetAsync([FromRoute, Required] int id)
@@ -67,7 +67,7 @@ namespace Project.Application.Controllers
                 if (result == null)
                 {
                     response.SetError("Não há nenhuma categoria com o ID especificado.");
-                    return BadRequest(response);
+                    return NotFound(response);
                 }
 
                 response.Data = result;
@@ -117,6 +117,7 @@ namespace Project.Application.Controllers
         /// Edit a category.
         /// </summary>
         [ProducesResponseType(typeof(Response<object>), 200)]
+        [ProducesResponseType(typeof(Response<object>), 404)]
         [ProducesResponseType(typeof(Response<object>), 500)]
         [HttpPut("{id:int}/edit")]
         public async Task<ActionResult<Response<object>>> UpdateAsync([FromRoute, Required] int id, [FromForm] CategoryRequest request, [FromQuery] bool active = true)
@@ -130,7 +131,7 @@ namespace Project.Application.Controllers
                 if (category == null || category?.Id <= 0)
                 {
                     response.SetError("A categoria não foi encontrada.");
-                    return BadRequest(response);
+                    return NotFound(response);
                 }
 
                 category.Active = active;
@@ -154,6 +155,7 @@ namespace Project.Application.Controllers
         /// Set a category as removed.
         /// </summary>
         [ProducesResponseType(typeof(Response<object>), 200)]
+        [ProducesResponseType(typeof(Response<object>), 404)]
         [ProducesResponseType(typeof(Response<object>), 500)]
         [HttpPatch("{id:int}/remove")]
         public async Task<ActionResult<Response<object>>> RemoveAsync([FromRoute, Required] int id)
@@ -167,7 +169,7 @@ namespace Project.Application.Controllers
                 if (category == null || category?.Id <= 0)
                 {
                     response.SetError("A categoria não foi encontrada.");
-                    return BadRequest(response);
+                    return NotFound(response);
                 }
 
                 var result = await _categoryService.DeleteCategory(category);

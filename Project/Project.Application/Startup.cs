@@ -40,7 +40,7 @@ namespace Project.Application
                 {
                     Version = "1.0",
                     Title = "Amandasdn.Project.Api",
-                    Description = "https://github.com/amandasdn/ASPNET_Core_REST_Dapper"
+                    Description = "Source: https://github.com/amandasdn/ASPNET_Core_REST_Dapper"
                 });
 
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";

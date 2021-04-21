@@ -61,7 +61,7 @@ namespace Project.Application.Controllers
         /// Get product by id.
         /// </summary>
         [ProducesResponseType(typeof(Response<Product>), 200)]
-        [ProducesResponseType(typeof(Response<object>), 400)]
+        [ProducesResponseType(typeof(Response<object>), 404)]
         [ProducesResponseType(typeof(Response<object>), 500)]
         [HttpGet("{id:int}")]
         public async Task<ActionResult<Response<Product>>> GetAsync([FromRoute, Required] int id)
@@ -75,7 +75,7 @@ namespace Project.Application.Controllers
                 if (result == null)
                 {
                     response.SetError("Não há nenhum produto com o ID especificado.");
-                    return BadRequest(response);
+                    return NotFound(response);
                 }
 
                 response.Data = result;
@@ -92,6 +92,7 @@ namespace Project.Application.Controllers
         /// Create a product.
         /// </summary>
         [ProducesResponseType(typeof(Response<object>), 201)]
+        [ProducesResponseType(typeof(Response<object>), 400)]
         [ProducesResponseType(typeof(Response<object>), 500)]
         [HttpPost]
         public async Task<ActionResult<Response<object>>> CreateAsync([FromForm] ProductRequest request, IFormFile fileImage)
@@ -125,7 +126,7 @@ namespace Project.Application.Controllers
                     var bytesToBase64 = Convert.ToBase64String(await fileToBytes);
 
                     product.Image = new ProductImage();
-                    product.Image.SetImage(fileImage.FileName, fileImage.ContentType, bytesToBase64);
+                    product.Image.SetImage($"{DateTime.Now:yyyyMMddHHmm}-{fileImage.FileName}", fileImage.ContentType, bytesToBase64);
                 }
 
                 var result = await _productService.CreateProduct(product);
@@ -147,6 +148,7 @@ namespace Project.Application.Controllers
         /// Edit a product.
         /// </summary>
         [ProducesResponseType(typeof(Response<object>), 200)]
+        [ProducesResponseType(typeof(Response<object>), 404)]
         [ProducesResponseType(typeof(Response<object>), 500)]
         [HttpPut("{id:int}/edit")]
         public async Task<ActionResult<Response<object>>> UpdateAsync([FromRoute, Required] int id, [FromForm] ProductRequest request, [FromQuery] bool active = true)
@@ -160,7 +162,7 @@ namespace Project.Application.Controllers
                 if (product == null || product?.Id <= 0)
                 {
                     response.SetError("O produto não foi encontrado.");
-                    return BadRequest(response);
+                    return NotFound(response);
                 }
 
                 product.Active = active;
@@ -176,7 +178,7 @@ namespace Project.Application.Controllers
                 if (!result)
                     throw new Exception("Ocorreu um erro ao tentar cadastrar o produto.");
 
-                return response;
+                return Ok(response);
             }
             catch (Exception e)
             {
@@ -188,6 +190,7 @@ namespace Project.Application.Controllers
         /// Set a product as removed.
         /// </summary>
         [ProducesResponseType(typeof(Response<object>), 200)]
+        [ProducesResponseType(typeof(Response<object>), 404)]
         [ProducesResponseType(typeof(Response<object>), 500)]
         [HttpPatch("{id:int}/remove")]
         public async Task<ActionResult<Response<object>>> RemoveAsync([FromRoute, Required] int id)
@@ -201,7 +204,7 @@ namespace Project.Application.Controllers
                 if (product == null || product?.Id <= 0)
                 {
                     response.SetError("O produto não foi encontrado.");
-                    return BadRequest(response);
+                    return NotFound(response);
                 }
 
                 var result = await _productService.DeleteProduct(product);
@@ -209,7 +212,7 @@ namespace Project.Application.Controllers
                 if (!result)
                     throw new Exception("Ocorreu um erro ao tentar cadastrar o produto.");
 
-                return response;
+                return Ok(response);
             }
             catch (Exception e)
             {
