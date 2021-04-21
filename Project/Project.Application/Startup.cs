@@ -1,22 +1,9 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.OpenApi.Models;
-using Project.Domain.Interfaces;
-using Project.Infra.Repositories;
-using Project.Service.Services;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
+using Project.Application.Configuration;
 
 namespace Project.Application
 {
@@ -29,59 +16,26 @@ namespace Project.Application
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
+        /// <summary>
+        /// This method gets called by the runtime. Use this method to add services to the container.
+        /// </summary>
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddApiConfig();
 
-            services.AddSwaggerGen(x =>
-            {
-                x.SwaggerDoc("v1.0", new OpenApiInfo
-                {
-                    Version = "1.0",
-                    Title = "Amandasdn.Project.Api",
-                    Description = "Source: https://github.com/amandasdn/ASPNET_Core_REST_Dapper"
-                });
+            services.AddSwaggerConfig();
 
-                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-
-                x.IncludeXmlComments(xmlPath, includeControllerXmlComments: true);
-            });
-
-            services.TryAddScoped<ICategoryRepository, CategoryRepository>();
-            services.TryAddScoped<ICategoryService, CategoryService>();
-
-            services.TryAddScoped<IProductRepository, ProductRepository>();
-            services.TryAddScoped<IProductService, ProductService>();
+            services.AddDependencies();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        /// <summary>
+        /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        /// </summary>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
+            app.UseApiConfig(env);
 
-            app.UseHttpsRedirection();
-
-            app.UseRouting();
-
-            app.UseAuthorization();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
-
-            app.UseSwagger();
-
-            app.UseSwaggerUI(x =>
-            {
-                x.RoutePrefix = string.Empty;
-                x.SwaggerEndpoint("/swagger/v1.0/swagger.json", "v1.0");
-            });
+            app.UseSwaggerConfig();
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Project.Application.Util;
 using Project.Domain.Entities;
 using Project.Domain.Interfaces;
@@ -13,8 +14,8 @@ namespace Project.Application.Controllers
     /// <summary>
     /// Category Controller.
     /// </summary>
-    [ApiController]
-    [Route("api/v1.0/[Controller]")]
+    [ApiController, ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/[Controller]")]
     public class CategoryController : ControllerBase
     {
         private ICategoryService _categoryService;

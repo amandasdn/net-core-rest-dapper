@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Project.Application.Util;
 using Project.Domain.Entities;
@@ -14,8 +15,8 @@ namespace Project.Application.Controllers
     /// <summary>
     /// Product Controller.
     /// </summary>
-    [ApiController]
-    [Route("api/v1.0/[Controller]")]
+    [ApiController, ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/[Controller]")]
     public class ProductController : ControllerBase
     {
         private IProductService _productService;
