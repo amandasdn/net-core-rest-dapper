@@ -1,5 +1,5 @@
 # ASPNET_Core_REST_Dapper
-API REST em ASP.Net Core 3.1. Arquitetura em quatro camadas (application/domain/service/infrastructure) baseada nos princípios DDD.
+API REST em .NET Core 3.1. Arquitetura em quatro camadas (application/domain/service/infrastructure) baseada nos princípios DDD.
 
 ## Recursos utilizados:
 
