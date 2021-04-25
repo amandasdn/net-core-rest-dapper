@@ -19,12 +19,16 @@ namespace Project.Application.Controllers.v1
     public class CategoryController : ControllerBase
     {
         private ICategoryService _categoryService;
+        private IUser _user;
 
         /// <summary>
         /// API: Category
         /// </summary>
-        public CategoryController(ICategoryService categoryService)
-            =>_categoryService = categoryService;
+        public CategoryController(ICategoryService categoryService, IUser user)
+        {
+            _categoryService = categoryService;
+            _user = user;
+        }
 
         /// <summary>
         /// Get all categories.

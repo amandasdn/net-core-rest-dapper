@@ -121,14 +121,23 @@ namespace Project.Application.Controllers.v1
         private async Task<LoginResponse> GenerateJwt(string email)
         {
             var user = await _userManager.FindByEmailAsync(email);
+            var claims = await _userManager.GetClaimsAsync(user);
+
+            claims.Add(new Claim(JwtRegisteredClaimNames.Sub, user.Id));
+            claims.Add(new Claim(JwtRegisteredClaimNames.Email, user.Email));
+            claims.Add(new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()));
+
+            var identityClaims = new ClaimsIdentity();
+            identityClaims.AddClaims(claims);
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
-            IdentityModelEventSource.ShowPII = true;
+            // IdentityModelEventSource.ShowPII = true;
             var token = tokenHandler.CreateToken(new SecurityTokenDescriptor
             {
                 Issuer = _appSettings.Issuer,
                 Audience = _appSettings.Audience,
+                Subject = identityClaims,
                 Expires = DateTime.UtcNow.AddHours(_appSettings.Expiration),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             });
@@ -142,7 +151,8 @@ namespace Project.Application.Controllers.v1
                 UserToken = new UserTokenResponse
                 {
                     Id = user.Id,
-                    Email = user.Email
+                    Email = user.Email,
+                    Claims = claims.Select(c => new ClaimResponse { Type = c.Type, Value = c.Value })
                 }
             };
 

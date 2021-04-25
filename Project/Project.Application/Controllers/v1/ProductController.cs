@@ -21,14 +21,16 @@ namespace Project.Application.Controllers.v1
     {
         private IProductService _productService;
         private ICategoryService _categoryService;
+        private IUser _user;
 
         /// <summary>
         /// API: Product
         /// </summary>
-        public ProductController(IProductService productService, ICategoryService categoryService)
+        public ProductController(IProductService productService, ICategoryService categoryService, IUser user)
         {
             _productService = productService;
             _categoryService = categoryService;
+            _user = user;
         }
 
         /// <summary>
