@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Project.Application.Extensions;
 using Project.Domain.Entities;
 using Project.Domain.Interfaces;
@@ -18,16 +19,18 @@ namespace Project.Application.Controllers.v1
     [Route("api/v{version:apiVersion}/[Controller]")]
     public class CategoryController : ControllerBase
     {
-        private ICategoryService _categoryService;
-        private IUser _user;
+        private readonly ICategoryService _categoryService;
+        private readonly IUser _user;
+        private readonly ILogger _logger;
 
         /// <summary>
         /// API: Category
         /// </summary>
-        public CategoryController(ICategoryService categoryService, IUser user)
+        public CategoryController(ICategoryService categoryService, IUser user, ILogger<CategoryController> logger)
         {
             _categoryService = categoryService;
             _user = user;
+            _logger = logger;
         }
 
         /// <summary>
@@ -39,6 +42,8 @@ namespace Project.Application.Controllers.v1
         [HttpGet]
         public async Task<ActionResult> GetAsync([FromQuery] bool onlyActive = true)
         {
+            _logger.LogInformation("Category.Get", $"OnlyActive: {onlyActive}");
+
             var response = new Response<List<Category>>();
 
             try
@@ -51,7 +56,7 @@ namespace Project.Application.Controllers.v1
             }
             catch(Exception e)
             {
-                return this.InternalServerError(response, e);
+                return this.InternalServerError(_logger, response, e);
             }
         }
 
@@ -82,7 +87,7 @@ namespace Project.Application.Controllers.v1
             }
             catch (Exception e)
             {
-                return this.InternalServerError(response, e);
+                return this.InternalServerError(_logger, response, e);
             }
         }
 
@@ -115,7 +120,7 @@ namespace Project.Application.Controllers.v1
             }
             catch (Exception e)
             {
-                return this.InternalServerError(response, e);
+                return this.InternalServerError(_logger, response, e);
             }
         }
 
@@ -153,7 +158,7 @@ namespace Project.Application.Controllers.v1
             }
             catch (Exception e)
             {
-                return this.InternalServerError(response, e);
+                return this.InternalServerError(_logger, response, e);
             }
         }
 
@@ -187,7 +192,7 @@ namespace Project.Application.Controllers.v1
             }
             catch (Exception e)
             {
-                return this.InternalServerError(response, e);
+                return this.InternalServerError(_logger, response, e);
             }
         }
     }

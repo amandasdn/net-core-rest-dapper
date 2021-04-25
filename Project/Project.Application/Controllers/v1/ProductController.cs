@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Project.Application.Extensions;
 using Project.Domain.Entities;
 using Project.Domain.Interfaces;
@@ -19,18 +20,20 @@ namespace Project.Application.Controllers.v1
     [Route("api/v{version:apiVersion}/[Controller]")]
     public class ProductController : ControllerBase
     {
-        private IProductService _productService;
-        private ICategoryService _categoryService;
-        private IUser _user;
+        private readonly IProductService _productService;
+        private readonly ICategoryService _categoryService;
+        private readonly IUser _user;
+        private readonly ILogger _logger;
 
         /// <summary>
         /// API: Product
         /// </summary>
-        public ProductController(IProductService productService, ICategoryService categoryService, IUser user)
+        public ProductController(IProductService productService, ICategoryService categoryService, IUser user, ILogger<ProductController> logger)
         {
             _productService = productService;
             _categoryService = categoryService;
             _user = user;
+            _logger = logger;
         }
 
         /// <summary>
@@ -56,7 +59,7 @@ namespace Project.Application.Controllers.v1
             }
             catch (Exception e)
             {
-                return this.InternalServerError(response, e);
+                return this.InternalServerError(_logger, response, e);
             }
         }
 
@@ -87,7 +90,7 @@ namespace Project.Application.Controllers.v1
             }
             catch (Exception e)
             {
-                return this.InternalServerError(response, e);
+                return this.InternalServerError(_logger, response, e);
             }
         }
 
@@ -143,7 +146,7 @@ namespace Project.Application.Controllers.v1
             }
             catch (Exception e)
             {
-                return this.InternalServerError(response, e);
+                return this.InternalServerError(_logger, response, e);
             }
         }
 
@@ -185,7 +188,7 @@ namespace Project.Application.Controllers.v1
             }
             catch (Exception e)
             {
-                return this.InternalServerError(response, e);
+                return this.InternalServerError(_logger, response, e);
             }
         }
 
@@ -219,7 +222,7 @@ namespace Project.Application.Controllers.v1
             }
             catch (Exception e)
             {
-                return this.InternalServerError(response, e);
+                return this.InternalServerError(_logger, response, e);
             }
         }
     }

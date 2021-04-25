@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
@@ -24,15 +25,17 @@ namespace Project.Application.Controllers.v1
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly AppSettings _appSettings;
+        private readonly ILogger _logger;
 
         /// <summary>
         /// Authentication Controller.
         /// </summary>
-        public AuthController(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager, IOptions<AppSettings> appSettings)
+        public AuthController(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager, IOptions<AppSettings> appSettings, ILogger<AuthController> logger)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _appSettings = appSettings.Value;
+            _logger = logger;
         }
 
         /// <summary>
@@ -43,6 +46,8 @@ namespace Project.Application.Controllers.v1
         [HttpPost("register")]
         public async Task<ActionResult> RegisterAsync(User user)
         {
+            _logger.LogInformation("Auth.Register.Post", user.Email);
+
             var response = new Response<object>();
 
             try
@@ -56,7 +61,11 @@ namespace Project.Application.Controllers.v1
                 var result = await _userManager.CreateAsync(userIdentity, user.Password);
                 if (result.Succeeded)
                 {
+                    _logger.LogInformation("Usuário criado com sucesso.");
+
                     await _signInManager.SignInAsync(userIdentity, false);
+
+                    _logger.LogInformation("Usuário logado com sucesso.");
 
                     response.Data = await GenerateJwt(userIdentity.Email);
 
@@ -77,7 +86,7 @@ namespace Project.Application.Controllers.v1
             }
             catch (Exception e)
             {
-                return this.InternalServerError(response, e);
+                return this.InternalServerError(_logger, response, e);
             }
         }
 
@@ -89,6 +98,8 @@ namespace Project.Application.Controllers.v1
         [HttpPost("signin")]
         public async Task<ActionResult> Login(User user)
         {
+            _logger.LogInformation("Auth.SignIn.Post", user.Email);
+
             var response = new Response<object>();
 
             try
@@ -98,6 +109,8 @@ namespace Project.Application.Controllers.v1
                 if (result.Succeeded)
                 {
                     response.Data = await GenerateJwt(user.Email);
+
+                    _logger.LogInformation("Usuário logado com sucesso.");
 
                     return Ok(response);
                 }
@@ -110,10 +123,11 @@ namespace Project.Application.Controllers.v1
             }
             catch (Exception e)
             {
-                return this.InternalServerError(response, e);
+                return this.InternalServerError(_logger, response, e);
             }
         }
 
+        #region Private methods
 
         /// <summary>
         /// Generate JWT (JSON Web Token).
@@ -158,5 +172,7 @@ namespace Project.Application.Controllers.v1
 
             return response;
         }
+
+        #endregion
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Project.Domain.Entities;
 using System;
 using System.IO;
@@ -27,8 +28,9 @@ namespace Project.Application.Extensions
         /// <summary>
         /// Return a status code 500.
         /// </summary>
-        public static ActionResult InternalServerError<T>(this ControllerBase controllerBase, Response<T> response, Exception exception)
+        public static ActionResult InternalServerError<T>(this ControllerBase controllerBase, ILogger logger, Response<T> response, Exception exception)
         {
+            logger.LogError(exception?.Message);
             response.SetError(exception?.Message);
             return controllerBase.StatusCode(500, response);
         }
