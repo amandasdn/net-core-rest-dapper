@@ -46,6 +46,7 @@ namespace Project.Application.Configuration
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

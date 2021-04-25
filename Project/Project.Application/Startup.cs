@@ -22,6 +22,8 @@ namespace Project.Application
         /// </summary>
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddIdentityConfig(Configuration);
+
             services.AddApiConfig();
 
             services.AddSwaggerConfig();

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Project.Application.Util;
+using Project.Application.Extensions;
 using Project.Domain.Entities;
 using Project.Domain.Interfaces;
 using System;
@@ -14,7 +14,7 @@ namespace Project.Application.Controllers.v1
     /// <summary>
     /// Category Controller.
     /// </summary>
-    [ApiController, ApiVersion("1.0")]
+    [Authorize, ApiController, ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/[Controller]")]
     public class CategoryController : ControllerBase
     {
@@ -29,6 +29,7 @@ namespace Project.Application.Controllers.v1
         /// <summary>
         /// Get all categories.
         /// </summary>
+        [AllowAnonymous]
         [ProducesResponseType(typeof(Response<List<Category>>), 200)]
         [ProducesResponseType(typeof(Response<object>), 500)]
         [HttpGet]
