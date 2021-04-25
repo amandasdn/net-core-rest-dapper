@@ -46,8 +46,6 @@ namespace Project.Application.Controllers.v1
         [HttpPost("register")]
         public async Task<ActionResult> RegisterAsync(User user)
         {
-            _logger.LogInformation("Auth.Register.Post", user.Email);
-
             var response = new Response<object>();
 
             try
@@ -86,7 +84,7 @@ namespace Project.Application.Controllers.v1
             }
             catch (Exception e)
             {
-                return this.InternalServerError(_logger, response, e);
+                return this.InternalServerError(response, e);
             }
         }
 
@@ -98,8 +96,6 @@ namespace Project.Application.Controllers.v1
         [HttpPost("signin")]
         public async Task<ActionResult> Login(User user)
         {
-            _logger.LogInformation("Auth.SignIn.Post", user.Email);
-
             var response = new Response<object>();
 
             try
@@ -123,7 +119,7 @@ namespace Project.Application.Controllers.v1
             }
             catch (Exception e)
             {
-                return this.InternalServerError(_logger, response, e);
+                return this.InternalServerError(response, e);
             }
         }
 

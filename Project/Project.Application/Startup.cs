@@ -29,6 +29,8 @@ namespace Project.Application
             services.AddSwaggerConfig();
 
             services.AddDependencies();
+
+            services.AddKissLog();
         }
 
         /// <summary>
@@ -36,7 +38,7 @@ namespace Project.Application
         /// </summary>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IApiVersionDescriptionProvider provider)
         {
-            app.UseApiConfig(env);
+            app.UseApiConfig(env, Configuration);
 
             app.UseSwaggerConfig(provider);
         }

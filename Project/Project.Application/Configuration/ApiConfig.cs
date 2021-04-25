@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using KissLog.AspNetCore;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -35,7 +36,7 @@ namespace Project.Application.Configuration
         /// <summary>
         /// Startup.cs: Configure
         /// </summary>
-        public static IApplicationBuilder UseApiConfig(this IApplicationBuilder app, IWebHostEnvironment env)
+        public static IApplicationBuilder UseApiConfig(this IApplicationBuilder app, IWebHostEnvironment env, IConfiguration configuration)
         {
             if (env.IsDevelopment())
             {
@@ -48,6 +49,8 @@ namespace Project.Application.Configuration
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseKissLog(configuration);
 
             app.UseEndpoints(endpoints =>
             {
