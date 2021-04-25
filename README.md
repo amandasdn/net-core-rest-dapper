@@ -1,4 +1,4 @@
-# ASPNET_Core_REST_Dapper
+# NET_Core_REST_Dapper
 API REST em .NET Core 3.1. Arquitetura em quatro camadas (application/domain/service/infrastructure) baseada nos princípios DDD.
 
 ## Recursos utilizados:
@@ -12,4 +12,5 @@ API REST em .NET Core 3.1. Arquitetura em quatro camadas (application/domain/ser
 - SQL;
 - Identity;
 - JWT (JSON Web Token);
-- Swagger.
+- Swagger;
+- KissLog.
