@@ -23,7 +23,7 @@ namespace Project.Application.Extensions
         /// <summary>
         /// Get the logged user's name.
         /// </summary>
-        // public string Name => _accessor.HttpContext.User.Identity.Name;
+        public string Name => _accessor.HttpContext.User.Identity.Name;
 
         /// <summary>
         /// Get the logged user's ID (Guid).
