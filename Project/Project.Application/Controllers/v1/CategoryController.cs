@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Project.Application.Extensions;
 using Project.Domain.Entities;
 using Project.Domain.Interfaces;
@@ -18,16 +19,18 @@ namespace Project.Application.Controllers.v1
     [Route("api/v{version:apiVersion}/[Controller]")]
     public class CategoryController : ControllerBase
     {
-        private ICategoryService _categoryService;
-        private IUser _user;
+        private readonly ICategoryService _categoryService;
+        private readonly IUser _user;
+        private readonly ILogger _logger;
 
         /// <summary>
         /// API: Category
         /// </summary>
-        public CategoryController(ICategoryService categoryService, IUser user)
+        public CategoryController(ICategoryService categoryService, IUser user, ILogger<CategoryController> logger)
         {
             _categoryService = categoryService;
             _user = user;
+            _logger = logger;
         }
 
         /// <summary>
@@ -39,6 +42,8 @@ namespace Project.Application.Controllers.v1
         [HttpGet]
         public async Task<ActionResult> GetAsync([FromQuery] bool onlyActive = true)
         {
+            _logger.LogDebug("Category.Get", $"OnlyActive: {onlyActive}");
+
             var response = new Response<List<Category>>();
 
             try
@@ -46,6 +51,8 @@ namespace Project.Application.Controllers.v1
                 var result = await _categoryService.ListCategories();
 
                 response.Data = result.Where(x => (!onlyActive || x.Active)).ToList();
+
+                _logger.LogInformation($"Listagem de categorias obtida com sucesso.");
 
                 return Ok(response);
             }
@@ -68,15 +75,17 @@ namespace Project.Application.Controllers.v1
 
             try
             {
-                var result = await _categoryService.GetCategoryById(id);
+                var category = await _categoryService.GetCategoryById(id);
 
-                if (result == null)
+                if (category == null)
                 {
                     response.SetError("Não há nenhuma categoria com o ID especificado.");
                     return NotFound(response);
                 }
 
-                response.Data = result;
+                response.Data = category;
+
+                _logger.LogInformation($"Categoria [{category.Name}] obtida com sucesso.");
 
                 return Ok(response);
             }
@@ -89,7 +98,7 @@ namespace Project.Application.Controllers.v1
         /// <summary>
         /// Create a category.
         /// </summary>
-        [ProducesResponseType(typeof(Response<object>), 201)]
+        [ProducesResponseType(typeof(Response<Category>), 201)]
         [ProducesResponseType(typeof(Response<object>), 500)]
         [HttpPost]
         public async Task<ActionResult<Response<object>>> CreateAsync([FromForm] CategoryRequest request)
@@ -104,14 +113,18 @@ namespace Project.Application.Controllers.v1
                     Description = string.IsNullOrWhiteSpace(request.Description) ? string.Empty : request.Description.Trim()
                 };
 
-                var result = await _categoryService.CreateCategory(category);
+                var resultId = await _categoryService.CreateCategory(category);
 
-                if (result <= 0)
+                if (resultId <= 0)
                     throw new Exception("Ocorreu um erro ao tentar cadastrar a categoria.");
 
-                category.Id = result;
+                category.Id = resultId;
 
-                return Created(nameof(CreateAsync), category);
+                response.Data = category;
+
+                _logger.LogInformation($"Categoria [{category.Name}] criada com sucesso.");
+
+                return Created(nameof(CreateAsync), response);
             }
             catch (Exception e)
             {
@@ -149,6 +162,8 @@ namespace Project.Application.Controllers.v1
                 if (!result)
                     throw new Exception("Ocorreu um erro ao tentar cadastrar a categoria.");
 
+                _logger.LogInformation($"Categoria [{category.Name}] alterada com sucesso.");
+
                 return response;
             }
             catch (Exception e)
@@ -182,6 +197,8 @@ namespace Project.Application.Controllers.v1
 
                 if (!result)
                     throw new Exception("Ocorreu um erro ao tentar cadastrar a categoria.");
+
+                _logger.LogInformation($"Categoria [{category.Name}] removida com sucesso.");
 
                 return response;
             }

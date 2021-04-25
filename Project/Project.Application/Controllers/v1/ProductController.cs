@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Project.Application.Extensions;
 using Project.Domain.Entities;
 using Project.Domain.Interfaces;
@@ -19,18 +20,20 @@ namespace Project.Application.Controllers.v1
     [Route("api/v{version:apiVersion}/[Controller]")]
     public class ProductController : ControllerBase
     {
-        private IProductService _productService;
-        private ICategoryService _categoryService;
-        private IUser _user;
+        private readonly IProductService _productService;
+        private readonly ICategoryService _categoryService;
+        private readonly IUser _user;
+        private readonly ILogger _logger;
 
         /// <summary>
         /// API: Product
         /// </summary>
-        public ProductController(IProductService productService, ICategoryService categoryService, IUser user)
+        public ProductController(IProductService productService, ICategoryService categoryService, IUser user, ILogger<ProductController> logger)
         {
             _productService = productService;
             _categoryService = categoryService;
             _user = user;
+            _logger = logger;
         }
 
         /// <summary>
@@ -47,10 +50,12 @@ namespace Project.Application.Controllers.v1
             {
                 var result = await _productService.ListProducts(loadCategories);
 
-                response.Data = result.Where(x => (!onlyActive || x.Active)).ToList();
+                response.Data = result.Where(x => !onlyActive || x.Active).ToList();
 
                 if (!loadImages)
                     response.Data.ForEach(p => p.Image = null);
+
+                _logger.LogInformation($"Listagem de produtos obtida com sucesso.");
 
                 return Ok(response);
             }
@@ -73,15 +78,17 @@ namespace Project.Application.Controllers.v1
 
             try
             {
-                var result = await _productService.GetProductById(id);
+                var product = await _productService.GetProductById(id);
 
-                if (result == null)
+                if (product == null)
                 {
                     response.SetError("Não há nenhum produto com o ID especificado.");
                     return NotFound(response);
                 }
 
-                response.Data = result;
+                response.Data = product;
+
+                _logger.LogInformation($"Produto [{product.Name}] obtido com sucesso.");
 
                 return Ok(response);
             }
@@ -94,7 +101,7 @@ namespace Project.Application.Controllers.v1
         /// <summary>
         /// Create a product.
         /// </summary>
-        [ProducesResponseType(typeof(Response<object>), 201)]
+        [ProducesResponseType(typeof(Response<Product>), 201)]
         [ProducesResponseType(typeof(Response<object>), 400)]
         [ProducesResponseType(typeof(Response<object>), 500)]
         [HttpPost]
@@ -132,14 +139,18 @@ namespace Project.Application.Controllers.v1
                     product.Image.SetImage($"{DateTime.Now:yyyyMMddHHmm}-{fileImage.FileName}", fileImage.ContentType, bytesToBase64);
                 }
 
-                var result = await _productService.CreateProduct(product);
+                var resultId = await _productService.CreateProduct(product);
 
-                if (result <= 0)
+                if (resultId <= 0)
                     throw new Exception("Ocorreu um erro ao tentar cadastrar o produto.");
 
-                product.Id = result;
+                product.Id = resultId;
+                
+                response.Data = product;
 
-                return Created(nameof(CreateAsync), product);
+                _logger.LogInformation("Produto criado com sucesso.");
+
+                return Created(nameof(CreateAsync), response);
             }
             catch (Exception e)
             {
@@ -181,6 +192,8 @@ namespace Project.Application.Controllers.v1
                 if (!result)
                     throw new Exception("Ocorreu um erro ao tentar cadastrar o produto.");
 
+                _logger.LogInformation($"Produto [{product.Name}] alterado com sucesso.");
+
                 return Ok(response);
             }
             catch (Exception e)
@@ -214,6 +227,8 @@ namespace Project.Application.Controllers.v1
 
                 if (!result)
                     throw new Exception("Ocorreu um erro ao tentar cadastrar o produto.");
+
+                _logger.LogInformation($"Produto [{product.Name}] removido com sucesso.");
 
                 return Ok(response);
             }
