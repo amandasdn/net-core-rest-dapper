@@ -5,7 +5,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace Project.Application.Util
+namespace Project.Application.Extensions
 {
     /// <summary>
     /// Useful methods. 
