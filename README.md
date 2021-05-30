@@ -5,7 +5,7 @@ API REST em .NET Core 3.1. Arquitetura em quatro camadas (application/domain/ser
 
 - DDD (Domain-Driven Design);
 - Visual Studio 2019;
-- ASP.Net Core 3.1;
+- .Net Core 3.1;
 - API REST;
 - Entity Framework Core;
 - Dapper;
