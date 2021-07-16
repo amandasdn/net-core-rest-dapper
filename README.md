@@ -12,5 +12,5 @@ API REST em .NET Core 3.1. Arquitetura em quatro camadas (application/domain/ser
 - SQL;
 - Identity;
 - JWT (JSON Web Token);
-- Swagger;
+- Swagger (Swashbuckle);
 - KissLog.
