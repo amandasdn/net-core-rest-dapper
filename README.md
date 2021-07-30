@@ -1,7 +1,7 @@
 # NET_Core_REST_Dapper
 API REST em .NET Core 3.1. Arquitetura em quatro camadas (application/domain/service/infrastructure) baseada nos princípios DDD.
 
-## Recursos utilizados:
+## Recursos utilizados
 
 - DDD (Domain-Driven Design);
 - Visual Studio 2019;
